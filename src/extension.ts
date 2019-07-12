@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
  */
 export function activate(context: vscode.ExtensionContext) {
 
-	console.log('Congratulations, your extension "json-parse-validator" is now active!');
+	console.log('"json-parse-validator" is now active!');
 
 	const collection = vscode.languages.createDiagnosticCollection('test');
 
@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 		
 		if (vscode.window.activeTextEditor) {
 			updateDiagnostics(vscode.window.activeTextEditor.document, collection, true);
-			vscode.window.showInformationMessage('JSON.parse() executed! See problems windows for validation errors or press F8.');
+			vscode.window.showInformationMessage('JSON.parse() executed!');
 		}
 	});
 	
@@ -65,7 +65,7 @@ if (document && (skipLanguageCheck || vscode.languages.match('json', document)))
 
 			collection.set(document.uri, [{
 				code: '',
-				message: 'JSON.parse() validation error:' + error.message,
+				message: error.message,
 				range: new vscode.Range(document.positionAt(positionError), document.positionAt(positionError)),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'json-parse-validator',

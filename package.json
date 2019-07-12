@@ -2,12 +2,16 @@
     "name": "json-parse-validator",
     "displayName": "json-parse-validator",
     "description": "Uses the JSON.parse() method to validate a JSON document.",
-    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AdrianSanguineti/json-parse-validator.git"
+    },
+    "version": "1.0.0",
     "engines": {
         "vscode": "^1.36.0"
     },
     "categories": [
-        "Other"
+        "Linters"
     ],
     "activationEvents": [
         "*"
