@@ -1,10 +1,12 @@
 # json-parse-validator README
 
-The "json-parse-validtor" extension is meant to be used as the supplement to the in-built JSON language support in VS Code. 
+The "json-parse-validator" extension is meant to be used as the supplement to the in-built JSON language support in VS Code. 
 
-As good as the in-built JSON validator is, I've personally found at times that VS Code shows no errors for the JSON document I am working on, but when the JSON document is used in the target application, it cannot be read. This is often caused by bad character encoding of whitespace characters introduced by cut/paste from outside applications, that are not picked up by the in-built validator. 
+I've personally found at times that VS Code shows no syntax errors or validation issues for the JSON document that I am working on, but when the JSON document is used in the target application, it cannot be read. This is often caused by bad character encoding of whitespace characters introduced by cut/paste from outside applications, that are not picked up by the in-built validator. 
 
-Calling `JSON.parse()` on the document often matches the use cases as to when the parse errors occur. Such an example is the [Azure Resource Group Deployment task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment?view=azure-devops) in Azure Devops, which presently uses the `JSON.parse()` function to validate the provided ARM template before attempting to deploy.
+Most of the time, it's a call to `JSON.parse()` which results in the JSON document being rejected as invalid JSON. Such an example is the [Azure Resource Group Deployment task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment?view=azure-devops) in Azure Devops, which presently uses the `JSON.parse()` function to validate the provided ARM template before attempting to deploy.
+
+Therefore, this extension was built in order to detect `JSON.parse()` issues as the document is being written.
 
 ## Features
 
@@ -22,7 +24,7 @@ This extension has no settings in v1.0.0.
 
 ## Known Issues
 
-1. Only the first error in the JSON document will be displayed. This is a side-affect of the `JSON.parse()` which returns only the first error it encounters.
+1. Only the first error in the JSON document will be displayed. This is due to the `JSON.parse()` method which returns only the first error it encounters.
 
 ## Release Notes
 
