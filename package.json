@@ -19,12 +19,10 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.json-parse-validator",
-                "title": "Parse with JSON.parse()"
-            }
-        ]
+        "commands": [{
+            "command": "extension.json-parse-validator",
+            "title": "Parse with JSON.parse()"
+        }]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
