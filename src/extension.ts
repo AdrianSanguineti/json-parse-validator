@@ -1,6 +1,8 @@
 'use strict';
 import * as vscode from 'vscode';
 
+const errorSource: string = 'json-parse-validator';
+
 /**
  * This method is called only once when your extension is activated.
  * @param context The extension context.
@@ -53,27 +55,48 @@ export function deactivate() {}
  * @param skipLanguageCheck Skips checking whether the document language is json.
  */
 function updateDiagnostics(document: vscode.TextDocument, collection: vscode.DiagnosticCollection, skipLanguageCheck:boolean = false): void {
-	
-if (document && (skipLanguageCheck || vscode.languages.match('json', document))) {
+	if (document && (skipLanguageCheck || vscode.languages.match('json', document))) {
 		try {
 			JSON.parse(document.getText());
 			collection.clear();
 		}
 		catch(error) {
-			
-			let positionError = parseJsonPositionError(error.message);
-
-			collection.set(document.uri, [{
-				code: '',
-				message: error.message,
-				range: new vscode.Range(document.positionAt(positionError), document.positionAt(positionError)),
-				severity: vscode.DiagnosticSeverity.Error,
-				source: 'json-parse-validator',
-				relatedInformation: []
-			}]);
+			handleError(error, document, collection);
 		}
 	} else {
 		collection.clear();
+	}
+}
+
+/**
+ * Handles error thrown by JSON.parse().
+ * @param error The error thron by JSON.parse().
+ * @param document The document being processed.
+ * @param collection The diagnostic collection.
+ */
+function handleError(error: Error, document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {
+	let positionError = parseJsonPositionError(error.message);
+	let errorRange = new vscode.Range(document.positionAt(positionError), document.positionAt(positionError));
+
+	if (containsNoBreakWhitespace(error.message)) {
+		collection.set(document.uri, [{
+			code: 'unexpected-nbsp',
+			message: 'Unexpected non-breaking space (\\u0040) detected.',
+			range: errorRange,
+			severity: vscode.DiagnosticSeverity.Error,
+			source: errorSource,
+			relatedInformation: []
+		}]);
+	}
+	else {
+		collection.set(document.uri, [{
+			code: 'unexpected-token',
+			message: error.message,
+			range: errorRange,
+			severity: vscode.DiagnosticSeverity.Error,
+			source: errorSource,
+			relatedInformation: []
+		}]);
 	}
 }
 
@@ -95,4 +118,15 @@ function parseJsonPositionError(errorMessage: string): number {
 	}
 
 	return 0;
+}
+
+/**
+ * Checks if the error message has indicated that an unexpected non-breaking whitespace
+ * character was found.
+ * @param errorMessage The error message string.
+ */
+function containsNoBreakWhitespace(errorMessage: string) : boolean {
+	// Example error:
+	// Unexpected token   in JSON at position 38
+	return errorMessage.indexOf('\u00A0') > 0;
 }
