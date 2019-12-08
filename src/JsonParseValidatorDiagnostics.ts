@@ -4,12 +4,20 @@ import {findAll} from './Utilities';
 import * as invalidCharacters from './InvalidCharacters';
 
 export const ERROR_SOURCE: string = 'json-parse-validator';
-export const CODE_NB_WHITESPACE: string = 'nb-whitespace';
 export const CODE_UNEXPECTED_TOKEN: string = 'unexpected-token';
+export const SUPPORTED_LANGUAGES:vscode.DocumentSelector[] = [
+	{ scheme: 'file', language: 'json' },
+	{ scheme: 'untitled', language: 'json' }
+];
 
-const nbWhitespace: string = '\u00A0';
+/**
+ * Registers the Json-Parse-Validator to document changes.
+ * @param context The extension context.
+ */
+export function subscribeToDocumentChanges(context: vscode.ExtensionContext): void {
+	const diagnostics = vscode.languages.createDiagnosticCollection('json-parse-validator');
+	context.subscriptions.push(diagnostics);
 
-export function subscribeToDocumentChanges(context: vscode.ExtensionContext, diagnostics: vscode.DiagnosticCollection): void {
     	// Run the validation straight away.
 	if (vscode.window.activeTextEditor) {
 		updateDiagnostics(vscode.window.activeTextEditor.document, diagnostics);
@@ -29,15 +37,15 @@ export function subscribeToDocumentChanges(context: vscode.ExtensionContext, dia
 		}
 	}));
 
-    let disposable = vscode.commands.registerCommand('extension.json-parse-validator', () => {
-		
+    let command = vscode.commands.registerCommand('extension.json-parse-validator', () => {
+
 		if (vscode.window.activeTextEditor) {
 			updateDiagnostics(vscode.window.activeTextEditor.document, diagnostics, true);
 			vscode.window.showInformationMessage('JSON.parse() executed!');
 		}
 	});
 	
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(command);
 }
 
 /**
@@ -47,7 +55,7 @@ export function subscribeToDocumentChanges(context: vscode.ExtensionContext, dia
  * @param skipLanguageCheck Skips checking whether the document language is json.
  */
 function updateDiagnostics(document: vscode.TextDocument, collection: vscode.DiagnosticCollection, skipLanguageCheck:boolean = false): void {
-	if (document && (skipLanguageCheck || vscode.languages.match('json', document))) {
+	if (document && (skipLanguageCheck || SUPPORTED_LANGUAGES.some(selector => vscode.languages.match(selector, document)))) {
 		try {
             JSON.parse(document.getText());
             collection.clear();
@@ -70,22 +78,10 @@ function findAllInvalidCharacters(document: vscode.TextDocument): vscode.Diagnos
 
 	for (const invalidCharacter of invalidCharacters.All) {
 		let ranges = findAll(document, invalidCharacter.unicode);
-		diagnostics = diagnostics.concat(ranges.map(range => createDiagnostic(invalidCharacter.message, range)));	
+		diagnostics = diagnostics.concat(ranges.map(range => invalidCharacter.createDiagnostic(range)));	
 	}
 
     return diagnostics;
-}
-
-/**
- * Creates a new diagnostic object.
- * @param message The message to display.
- * @param range The text range.
- */
-function createDiagnostic(message: string, range: vscode.Range) : vscode.Diagnostic {
-    var diagnostic = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
-    diagnostic.code = CODE_NB_WHITESPACE;
-    diagnostic.source = ERROR_SOURCE;
-    return diagnostic;
 }
 
 /**
@@ -100,7 +96,7 @@ function handleError(error: Error, document: vscode.TextDocument, collection: vs
     diagnostics = diagnostics.concat(findAllInvalidCharacters(document));
 
     if (diagnostics.length === 0) {
-        // Add a single diagnostic error if the issue couldn't be detected.
+        // Add a single diagnostic error if the issue couldn't be detected for a supported reason.
 		let positionError = parseJsonPositionError(error.message);
 		let errorRange = new vscode.Range(document.positionAt(positionError), document.positionAt(positionError));
 		collection.set(document.uri, [{
