@@ -1,6 +1,10 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as jsonParseValidator from './JsonParseValidatorDiagnostics';
+import * as invalidCharacters from './InvalidCharacters';
+
+import * as nls from 'vscode-nls';
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class NbWhitespaceQuickFixProvider implements vscode.CodeActionProvider {
 
@@ -14,20 +18,22 @@ export class NbWhitespaceQuickFixProvider implements vscode.CodeActionProvider {
     context: vscode.CodeActionContext,
     token: vscode.CancellationToken
   ): vscode.CodeAction[] | undefined {
-    return context.diagnostics
-      .filter(this.canQuickFix)
-      .map(diagnostic => this.createFix(document, diagnostic));
+    return this.createQuickFixes(document, context.diagnostics);
   }
 
-  private canQuickFix(diagnostic: vscode.Diagnostic): boolean {
-    return diagnostic.code === jsonParseValidator.CODE_NB_WHITESPACE;
-  }
+  private createQuickFixes(document: vscode.TextDocument, diagnostics: ReadonlyArray<vscode.Diagnostic>): vscode.CodeAction[] | undefined  {
+    let actions: vscode.CodeAction[] = [];
 
-  private createFix(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): vscode.CodeAction {
-    const fix = new vscode.CodeAction(`Replace with whitepace.`, vscode.CodeActionKind.QuickFix);
-    fix.edit = new vscode.WorkspaceEdit();
-    fix.edit.replace(document.uri, new vscode.Range(diagnostic.range.start, diagnostic.range.end.translate(0, 1)), ' ');
-    fix.isPreferred = true;
-    return fix;
+    for (const diagnostic of diagnostics) {
+      const config = invalidCharacters.All.find(config => config.diagnosticCode === diagnostic.code);
+
+      if (config === undefined || config === null) {
+        continue;
+      }
+
+      actions.push(config.fixConfig.createQuickFixAction(document, diagnostic));
+    }
+
+    return actions;
   }
 }
