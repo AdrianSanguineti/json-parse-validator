@@ -6,8 +6,8 @@ import * as vscode from 'vscode';
  * @param document The document to search in.
  * @param value The value to search for.
  */
-export function findAll(document: vscode.TextDocument, value: string) : vscode.Range[] {
-    let text = document.getText();
+export function findAll(document: vscode.TextDocument, value: string): vscode.Range[] {
+	let text = document.getText();
 	let matches: vscode.Range[] = [];	
 
 	let index = 0;
@@ -24,4 +24,5 @@ export function findAll(document: vscode.TextDocument, value: string) : vscode.R
     }
     
     return matches;
+
 }
