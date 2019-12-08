@@ -4,6 +4,16 @@ All notable changes to the "json-parse-validator" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## 1.1.0
+
+### Added
+- Added support for detecting various whitespace characters that result in a `SyntaxException` when processed by `JSON.parse()`.
+- Added quickfix actions to replace invalid characters with normal whitespace (`\u020`) or remove from document.
+
+### Changed
+- Unexpected token error in an invalid JSON document now only appears for characters the extension is not looking for.
+
+## 1.0.0
 
 - Initial release
+
