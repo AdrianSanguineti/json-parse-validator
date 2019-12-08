@@ -1,6 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import {findAll} from './Utilities';
+import * as invalidCharacters from './InvalidCharacters';
 
 export const ERROR_SOURCE: string = 'json-parse-validator';
 export const CODE_NB_WHITESPACE: string = 'nb-whitespace';
@@ -60,24 +61,18 @@ function updateDiagnostics(document: vscode.TextDocument, collection: vscode.Dia
 }
 
 /**
- * Checks if the error message has indicated that an unexpected non-breaking whitespace
- * character was found.
- * @param errorMessage The error message string.
- */
-function containsNbWhitespace(errorMessage: string) : boolean {
-	// Example error:
-	// Unexpected token   in JSON at position 38
-	return errorMessage.indexOf(nbWhitespace) > 0;
-}
-
-/**
- * Finds all non-breaking whitespaces within a document.
+ * Finds all invalid characters within a document.
  * @param document The document to search.
  * @returns The diagnostics objects for all instances of non-breaking-whitespaces.
  */
-function findAllNbWhitespace(document: vscode.TextDocument): vscode.Diagnostic[] {
-    let ranges = findAll(document, nbWhitespace);
-    let diagnostics = ranges.map(range => createDiagnostic('Unexpected non-breaking space (\\u0040) detected.', range));
+function findAllInvalidCharacters(document: vscode.TextDocument): vscode.Diagnostic[] {
+	let diagnostics: vscode.Diagnostic[] = [];
+
+	for (const invalidCharacter of invalidCharacters.All) {
+		let ranges = findAll(document, invalidCharacter.unicode);
+		diagnostics = diagnostics.concat(ranges.map(range => createDiagnostic(invalidCharacter.message, range)));	
+	}
+
     return diagnostics;
 }
 
@@ -102,7 +97,7 @@ function createDiagnostic(message: string, range: vscode.Range) : vscode.Diagnos
 function handleError(error: Error, document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {
     let diagnostics: vscode.Diagnostic[] = [];
     
-    diagnostics = diagnostics.concat(findAllNbWhitespace(document));
+    diagnostics = diagnostics.concat(findAllInvalidCharacters(document));
 
     if (diagnostics.length === 0) {
         // Add a single diagnostic error if the issue couldn't be detected.
