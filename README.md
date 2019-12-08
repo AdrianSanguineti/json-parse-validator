@@ -1,12 +1,13 @@
 # json-parse-validator README
 
-The "json-parse-validator" extension is meant to be used as the supplement to the in-built JSON language support in VS Code, to cover situations where a JSON document is shown as valid by VS Code, but not accepted by the `JSON.parse()` method. 
+The "json-parse-validator" extension is meant to be used as the supplement to the in-built JSON language support in VS Code. It has been built to cover situations where in-built JSON linter reports a JSON document to be valid, but that same document is rejected by the `JSON.parse()` method. 
 
 The extension will find and highlight invalid characters within a JSON document and provide actions to either:
 
 * Replace with normal whitespace character (`\u0020`);
 * Remove invalid character from the document.
 
+> Note: in some cases, running the built-in Format Document command can also remove the invalid characters.
 
 ## Features
 
@@ -28,7 +29,7 @@ This extension has no settings in v1.0.0.
 
 ## Release Notes
 
-## 1.1.0
+### 1.1.0
 
 - Added support for detecting various whitespace characters that result in a `SyntaxException` when processed by `JSON.parse()`.
 - Each detected invalid character is now returned as a separate problem with the document.
