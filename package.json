@@ -47,5 +47,6 @@
     },
     "dependencies": {
         "vscode-nls": "^4.1.1"
-    }
+    },
+    "icon": "./images/logo.png"
 }
