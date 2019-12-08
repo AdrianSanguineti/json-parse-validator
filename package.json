@@ -16,7 +16,8 @@
         "Linters"
     ],
     "activationEvents": [
-        "*"
+        "onLanguage:json",
+        "onCommand:extension.json-parse-validator"
     ],
     "main": "./out/extension.js",
     "contributes": {
