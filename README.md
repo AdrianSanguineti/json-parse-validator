@@ -21,13 +21,17 @@ Run `JSON.parse()` on your document on demand:
 
 ## Extension Settings
 
-This extension has no settings in v1.0.0.
+This extension has no settings in v1.1.1.
 
 ## Known Issues
 
 - None
 
 ## Release Notes
+
+### 1.1.1
+
+- Upgrade NPM package references to fix packages with known security vulnerabilities.
 
 ### 1.1.0
 
