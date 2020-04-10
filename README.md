@@ -29,6 +29,10 @@ This extension has no settings in v1.1.1.
 
 ## Release Notes
 
+### 1.1.2
+
+- Fixed logo
+
 ### 1.1.1
 
 - Upgrade NPM package references to fix packages with known security vulnerabilities.

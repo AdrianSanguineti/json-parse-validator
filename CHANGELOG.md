@@ -4,6 +4,22 @@ All notable changes to the "json-parse-validator" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.1.2
+
+### Added
+- None
+
+### Changed
+- Fixed logo
+
+## 1.1.1
+
+### Added
+- None
+
+### Changed
+- Upgrade NPM package references to fix packages with known security vulnerabilities.
+
 ## 1.1.0
 
 ### Added
