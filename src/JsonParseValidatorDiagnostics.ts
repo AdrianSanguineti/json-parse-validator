@@ -7,7 +7,9 @@ export const ERROR_SOURCE: string = 'json-parse-validator';
 export const CODE_UNEXPECTED_TOKEN: string = 'unexpected-token';
 export const SUPPORTED_LANGUAGES:vscode.DocumentSelector[] = [
 	{ scheme: 'file', language: 'json' },
-	{ scheme: 'untitled', language: 'json' }
+	{ scheme: 'untitled', language: 'json' },
+    { scheme: 'file', language: 'jsonc' },
+	{ scheme: 'untitled', language: 'jsonc' }
 ];
 
 /**

@@ -21,6 +21,7 @@
     "icon": "images/logo128.png",
     "activationEvents": [
         "onLanguage:json",
+        "onLanguage:jsonc",
         "onCommand:extension.json-parse-validator"
     ],
     "main": "./out/extension.js",
